@@ -1,4 +1,5 @@
 ![Lint-free](https://github.com/nyu-software-engineering/containerized-app-exercise/actions/workflows/lint.yml/badge.svg)
+![Static Badge](https://img.shields.io/badge/build-work%20in%20progress-brightgreen)
 
 # Containerized App Exercise
 
