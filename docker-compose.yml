@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # Machine Learning Client Service
+  ml-client:
+    build:
+      context: ./machine-learning-client
+      dockerfile: Dockerfile
+    container_name: ml-client
+    environment:
+      - MONGO_URI=mongodb+srv://lgl1876523678:1017@cluster0.k8xwe.mongodb.net/?retryWrites=true&w=majority
+    networks:
+      - app-network
+    restart: unless-stopped
+    # restart: "no"
+
+  # Web App Service
+  web-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web-app
+    ports:
+      - "8080:5000"
+    depends_on:
+      - ml-client
+    environment:
+      - MONGO_URI=mongodb+srv://lgl1876523678:1017@cluster0.k8xwe.mongodb.net/?retryWrites=true&w=majority
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
