@@ -1,40 +1,27 @@
-# Use Python 3.10 as specified in Pipfile
-FROM python:3.10-slim
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim
 
-# Set working directory
+# Update package list and install required system dependencies:
+# - libgl1-mesa-glx: for OpenCV's OpenGL functionality.
+# - libglib2.0-0: provides libgthread-2.0.so.0, among other things.
+RUN apt-get update && \
+    apt-get install -y libgl1-mesa-glx libglib2.0-0 && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set the working directory in the container to /app
 WORKDIR /app
 
-# Install system dependencies
-# Common packages for ML image processing - customize as needed
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libopencv-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Copy the requirements.txt file into the container at /app
+COPY requirements.txt /app/
 
-# Install pipenv
-RUN pip install --no-cache-dir pipenv
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy Pipfile and Pipfile.lock
-COPY Pipfile Pipfile.lock ./
+# Copy the rest of the ml-client code into the container
+COPY . /app
 
-# Install dependencies
-RUN pipenv install --system
+# Expose port 8000 for the ml-client Flask app
+EXPOSE 8000
 
-# We'll need additional ML libraries - these are commonly used for image recognition
-# Uncomment and adjust based on your specific needs
-RUN pip install --no-cache-dir \
-    opencv-python-headless \
-    numpy \
-    tensorflow \
-    pymongo
-
-
-# Copy the rest of the application
-COPY . .
-
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
-
-# Command to run the application
-# Update this with your actual entry point
-CMD ["python", "main.py"]
+# Run the application
+CMD ["python", "ml_api.py"]

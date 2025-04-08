@@ -6,8 +6,16 @@ name = "pypi"
 [packages]
 pylint = "*"
 black = "*"
+numpy = "*"          # Numerical processing
+pymongo = "*"        # MongoDB client
+pytest = "*"         # Unit testing
+pytest-cov = "*"     # Test coverage
+python-dotenv = "*"  # Environment variable management
+ultralytics = "*"    # YOLOv8
+opencv-python = "*"  # Computer vision
 
 [dev-packages]
+ipython = "*"        # Interactive Python shell
 
 [requires]
-python_version = "3.10"
+python_version = "3"
