@@ -2,6 +2,7 @@
 Machine Learning Client test module for verifying environment setup and dependencies.
 This module tests imports and connections to ensure the environment is properly configured.
 """
+
 import sys
 import numpy
 import tensorflow as tf
@@ -23,7 +24,7 @@ try:
 except pymongo.errors.ConnectionFailure as e:
     print("Expected MongoDB connection error:", e)
 except Exception as e:  # pylint: disable=broad-except
-    
+
     print("Unexpected error when connecting to MongoDB:", e)
 
 print("ML client test completed successfully!")
