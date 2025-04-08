@@ -5,6 +5,12 @@
 
 Build a containerized app that uses machine learning. See [instructions](./instructions.md) for details.
 
+## Deployment of the web app
+
+- docker build -t <name> .
+- docker run -d -p <port number>:5000 <name>
+- Then visit http://localhost:<port number>
+
 ## Team members
 
 - [Polaris Wu](https://github.com/Polaris-Wu450)
