@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Object Recongition</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}?v=1">
+    <style>
+       
+        body {
+            background-color: rgb(40, 40, 40);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .left-pane {
+            width: 50%;
+            text-align: center;
+        }
+
+        .left-pane img {
+            width: 100%;
+            height: auto;
+        }
+
+        .right-pane {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-part {
+            width: 100%;
+            text-align: center;
+        }
+
+        .bottom-part {
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        video, canvas {
+            width: 320px;
+            height: 240px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .capture {
+            width: 110px;
+              background-color: #ff9900;
+             color: white;
+        }
+        .toggleCamera{
+            background-color: gray;
+             color: white;
+        }
+        .obj_info{
+            background-color: gray;
+            color: white;
+        }
+        button {
+            padding: 10px 16px;
+            margin: 10px;
+            font-size: 16px;
+        }
+
+        /* Obj_info*/
+        input[type="text"] {
+            width: 300px;
+            padding: 8px;
+            margin-top: 10px;
+            font-size: 16px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- LEFT PANE (IMAGE)-->
+        <div class="left-pane">
+            <img id="photo" src="{{ url_for('static', filename='idle.png') }}" alt="Captured Photo">
+        </div>
+        <!-- RIGHT PANE (VIDEO, INFO) -->
+        <div class="right-pane">
+            <div class="top-part">
+                <video id="video" autoplay></video>
+                <br>
+                <button id="capture" class="capture">Capture</button>
+                <button id="toggleCamera" class="toggleCamera">Turn off the Camera</button>
+            </div>
+            <div class="bottom-part">
+               
+                <input type="text" id="objectName" class="obj_info" placeholder="Unknown Object">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const photo = document.getElementById('photo');
+        const captureButton = document.getElementById('capture');
+        const toggleButton = document.getElementById('toggleCamera');
+        const objectNameInput = document.getElementById('objectName');
+
+
+        let stream = null;
+        let cameraEnabled = false;
+
+        // Cam initialization
+        function startCamera() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(s) {
+                    stream = s;
+                    video.srcObject = stream;
+                    video.play();
+                    cameraEnabled = true;
+                    toggleButton.innerText = "Turn Off the Camera";
+                })
+                .catch(function(error) {
+                    console.error("Unable to Access the Camera: ", error);
+                });
+            } else {
+                alert("Your Browser Does Not Support Access to the Camera ");
+            }
+        }
+        
+        // Cam termination
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                cameraEnabled = false;
+                toggleButton.innerText = "Turn On the Camera";
+            }
+        }
+        
+        startCamera();
+
+      // canvas display
+        captureButton.addEventListener('click', function() {
+
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataUri = canvas.toDataURL('image/png');
+
+            photo.src = dataUri;
+    
+            fetch('/upload_photo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ data_uri: dataUri })
+            })
+            .then(response => response.json())
+            .then(result => console.log("Upload result:", result))
+            .catch(error => console.error("Upload Error:", error));
+        });
+
+    
+        toggleButton.addEventListener('click', function() {
+            if (cameraEnabled) {
+                stopCamera();
+            } else {
+                startCamera();
+            }
+        });
+
+        // get obj name
+        window.addEventListener('load', function() {
+            fetch('/object_name')
+            .then(response => response.json())
+            .then(data => {
+                if (data.name) {
+                    objectNameInput.value = data.name;
+                }
+            })
+            .catch(error => console.error("[Error] Unable to get name", error));
+        });
+    </script>
+</body>
+</html>
