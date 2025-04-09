@@ -5,11 +5,13 @@
 
 Build a containerized app that uses machine learning. See [instructions](./instructions.md) for details.
 
-## Deployment of the web app
+## Project Features
 
-- docker build -t [name] .
-- docker run -d -p [port number]:5000 [name]
-- Then visit http://localhost:[port number]
+## Project Deployment
+Type in following into terminal at the root directory:
+- docker-compose up -d         
+Then visit:
+- http://localhost:8080
 
 ## Team members
 
