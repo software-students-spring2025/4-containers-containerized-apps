@@ -155,6 +155,7 @@
 
       // canvas display
         captureButton.addEventListener('click', function() {
+            console.log("Capture event triggered");
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             canvas.width = video.videoWidth;
@@ -162,29 +163,38 @@
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             const dataUri = canvas.toDataURL('image/png');
             photo.src = dataUri;
+            console.log("Data URI length:", dataUri.length);
 
-        // Call ml_api for detection
+            let detectedName = "Unknown Object";
+            fetch('/upload_photo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data_uri: dataUri })
+            })
+            .then(response => response.json())
+            .then(result => console.log("Upload result:", result))
+            .catch(error => console.error("Upload Error:", error));
+    
+            // Call ml_api
             fetch('http://localhost:8000/detect_json', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ data_uri: dataUri })
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data_uri: dataUri })
             })
             .then(response => response.json())
             .then(result => {
-                console.log("Detection result:", result);
-                if (result.status === "success" && result.count > 0) {
-                    // Update the text box with the first detected object's class name
-                    objectNameInput.value = result.detections[0].class;
-                } else {
-                    objectNameInput.value = "Unknown Object";
+                console.log("* Detection result:", result);
+                if(result.status === "success" && result.count > 0){
+                    detectedName = result.detections[0].class;
                 }
+                objectNameInput.value = detectedName;
             })
             .catch(error => {
                 console.error("Error during detection:", error);
-                objectNameInput.value = "Detection Error";
-             });
+                detectedName = "Detection Error";
+                objectNameInput.value = detectedName;
+            })
+    
         });
 
     
