@@ -9,8 +9,8 @@ Build a containerized app that uses machine learning. See [instructions](./instr
 
 ## Project Deployment
 Type in following into terminal at the root directory:
-- docker-compose up -d         
-Then visit:
+- docker-compose up --build -d       
+&nbsp;&nbsp;Then visit:
 - http://localhost:8080
 
 ## Team members
