@@ -66,6 +66,7 @@ def upload_photo():
             "timestamp": datetime.datetime.utcnow(),
             "content_type": content_type,
             "image_data": img_data
+            
         }
         result = cpc.insert_one(document)
         print("Inserted image document id:", result.inserted_id)
