@@ -1,7 +1,5 @@
 flask
 pymongo
 requests
-
-bson
 pytest
 coverage
