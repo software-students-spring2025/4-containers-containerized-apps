@@ -1,5 +1,7 @@
 ![Lint-free](https://github.com/nyu-software-engineering/containerized-app-exercise/actions/workflows/lint.yml/badge.svg)
 ![Static Badge](https://img.shields.io/badge/build-work%20in%20progress-e3bc10)
+![ML Client Tests](https://github.com/nyu-software-engineering/containerized-app-exercise/actions/workflows/ml-client-test.yml/badge.svg)
+![Web App Tests](https://github.com/nyu-software-engineering/containerized-app-exercise/actions/workflows/web-app-test.yml/badge.svg)
 
 # Containerized App Exercise
 

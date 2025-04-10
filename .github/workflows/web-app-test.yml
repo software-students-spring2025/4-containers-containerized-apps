@@ -1,0 +1,34 @@
+name: Web App Tests
+
+on:
+  push:
+    paths:
+      - "web-app/**"
+      - ".github/workflows/web-app-test.yml"
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: web-app
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest coverage
+
+      - name: Run tests with coverage
+        run: |
+          coverage run -m pytest
+          coverage report
