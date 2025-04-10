@@ -1,3 +1,9 @@
 flask
 pymongo
+<<<<<<< HEAD
 requests
+=======
+bson
+pytest
+coverage
+>>>>>>> 527c0cc (added yml and requirements for test CI)
