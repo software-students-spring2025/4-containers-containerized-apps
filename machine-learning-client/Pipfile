@@ -15,7 +15,6 @@ ultralytics = "*"    # YOLOv8
 opencv-python = "*"  # Computer vision
 
 [dev-packages]
-ipython = "*"        # Interactive Python shell
 
 [requires]
 python_version = "3"
