@@ -4,18 +4,23 @@ from unittest.mock import patch, MagicMock
 from PIL import Image
 from yolov8_detector import YOLOv8Detector, process_image_detection
 
+
 @pytest.fixture
 def sample_frame():
     return np.zeros((480, 640, 3), dtype=np.uint8)
 
+
 @pytest.fixture
 def sample_detections():
-    return [{
-        "class_id": 0,
-        "class_name": "person",
-        "confidence": 0.85,
-        "bbox": (100, 150, 50, 80)
-    }]
+    return [
+        {
+            "class_id": 0,
+            "class_name": "person",
+            "confidence": 0.85,
+            "bbox": (100, 150, 50, 80),
+        }
+    ]
+
 
 def test_get_detection_stats(sample_detections):
     detector = YOLOv8Detector()
@@ -24,6 +29,7 @@ def test_get_detection_stats(sample_detections):
     assert stats["classes"]["person"] == 1
     assert round(stats["avg_confidence"], 2) == 0.85
 
+
 def test_get_detection_stats_empty():
     detector = YOLOv8Detector()
     stats = detector.get_detection_stats([])
@@ -31,16 +37,19 @@ def test_get_detection_stats_empty():
     assert not stats["classes"]
     assert stats["avg_confidence"] == 0
 
+
 def test_annotate_frame_runs(sample_frame, sample_detections):
     detector = YOLOv8Detector()
     annotated = detector.annotate_frame(sample_frame, sample_detections)
     assert isinstance(annotated, np.ndarray)
     assert annotated.shape == sample_frame.shape
 
+
 def test_detect_objects_without_model(sample_frame):
     detector = YOLOv8Detector()
     results = detector.detect_objects(sample_frame)
     assert not results
+
 
 @patch("ultralytics.YOLO")
 def test_load_model_success(mock_yolo):
@@ -49,12 +58,14 @@ def test_load_model_success(mock_yolo):
     assert success
     assert detector.model is not None
 
+
 @patch("ultralytics.YOLO", side_effect=Exception("fail"))
 def test_load_model_failure(mock_yolo):
     detector = YOLOv8Detector()
     success = detector.load_model()
     assert not success
     assert detector.model is None
+
 
 @patch("ultralytics.YOLO")
 def test_detect_objects_with_mocked_model(mock_yolo, sample_frame):
@@ -79,6 +90,7 @@ def test_detect_objects_with_mocked_model(mock_yolo, sample_frame):
     assert len(results) == 1
     assert results[0]["class_name"] == "person"
     assert results[0]["confidence"] > 0.5
+
 
 @patch("ultralytics.YOLO")
 def test_process_image_detection(mock_yolo):
