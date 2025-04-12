@@ -10,3 +10,7 @@ pytest
 opencv-python
 pymongo
 coverage
+python-dotenv
+pylint
+black
+pytest-cov

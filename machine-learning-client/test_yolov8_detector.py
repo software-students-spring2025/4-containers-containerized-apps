@@ -1,8 +1,8 @@
 import pytest
 import numpy as np
 from unittest.mock import patch, MagicMock
-from yolov8_detector import YOLOv8Detector, process_image_detection
 from PIL import Image
+from yolov8_detector import YOLOv8Detector, process_image_detection
 
 @pytest.fixture
 def sample_frame():
@@ -28,8 +28,8 @@ def test_get_detection_stats_empty():
     detector = YOLOv8Detector()
     stats = detector.get_detection_stats([])
     assert stats["count"] == 0
+    assert not stats["classes"]
     assert stats["avg_confidence"] == 0
-    assert stats["classes"] == {}
 
 def test_annotate_frame_runs(sample_frame, sample_detections):
     detector = YOLOv8Detector()
@@ -40,7 +40,7 @@ def test_annotate_frame_runs(sample_frame, sample_detections):
 def test_detect_objects_without_model(sample_frame):
     detector = YOLOv8Detector()
     results = detector.detect_objects(sample_frame)
-    assert results == []
+    assert not results
 
 @patch("ultralytics.YOLO")
 def test_load_model_success(mock_yolo):

@@ -17,10 +17,6 @@ CORS(app)
 
 @app.route('/detect', methods=['POST'])
 def detect():
-    """
-    API endpoint to perform object detection.
-    It expects a JSON payload containing a 'data_uri' field with the image data.
-    """
     try:
         data = request.get_json()
         if not data or "data_uri" not in data:
@@ -50,17 +46,12 @@ def detect():
         
         # Return the annotated image
         return send_file(img_bytes, mimetype='image/jpeg')
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         logger.exception("Error in /detect endpoint")
         return jsonify({"error": str(e)}), 500
 
-# Add an endpoint to get detection results as JSON
 @app.route('/detect_json', methods=['POST'])
 def detect_json():
-    """
-    API endpoint to perform object detection and return JSON results.
-    It expects a JSON payload containing a 'data_uri' field with the image data.
-    """
     try:
         data = request.get_json()
         if not data or "data_uri" not in data:

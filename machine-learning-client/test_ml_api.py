@@ -1,4 +1,3 @@
-import json
 import base64
 from unittest.mock import patch, MagicMock
 from io import BytesIO

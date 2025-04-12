@@ -1,15 +1,9 @@
-"""
-YOLOv8 object detection module.
-
-This module provides a wrapper around the Ultralytics YOLOv8 model for object detection.
-"""
+import logging
+import time
+from typing import Dict, List, Tuple, Any, Optional
 
 import cv2
-import logging
 import numpy as np
-import os
-import time
-from typing import Dict, List, Tuple, Any, Optional, Union
 from PIL import Image
 
 # Configure logging
@@ -21,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 class YOLOv8Detector:
-    """Class for detecting objects in images using YOLOv8."""
 
     def __init__(
         self,
@@ -29,47 +22,27 @@ class YOLOv8Detector:
         model_size: str = "n",  # 'n', 's', 'm', 'l', 'x'
         model_path: Optional[str] = None,
     ):
-        """
-        Initialize the YOLOv8 detector.
 
-        Args:
-            confidence_threshold: Minimum confidence score to consider a detection
-            model_size: Size of the YOLOv8 model ('n' for nano, 's' for small, etc.)
-            model_path: Path to a custom YOLOv8 model file, if None, will use the default model
-        """
         self.confidence_threshold = confidence_threshold
         self.model_size = model_size
         self.model_path = model_path
         self.model = None
         
-        logger.info(f"Initializing YOLOv8 detector with confidence threshold {confidence_threshold}")
+        logger.info("Initializing YOLOv8 detector with confidence threshold %s", confidence_threshold)
         
     def load_model(self) -> bool:
         try:
-            # Import here to avoid requirements if not using this class
-            from ultralytics import YOLO
-            
-            # Always download the latest compatible model from ultralytics
+            from ultralytics import YOLO   
             self.model = YOLO('yolov8n')
             
-            logger.info(f"Loaded YOLOv8 model: yolov8n")
+            logger.info("Loaded YOLOv8 model: yolov8n")
             return True
                 
         except Exception as e:
-            logger.error(f"Error loading YOLOv8 model: {str(e)}")
+            logger.error("Error loading YOLOv8 model: %s", str(e))
             return False
     
-    
     def detect_objects(self, frame: np.ndarray) -> List[Dict[str, Any]]:
-        """
-        Detect objects in a frame.
-
-        Args:
-            frame: Input image frame
-
-        Returns:
-            list: List of detection results, each with class_id, class_name, confidence, and bounding box
-        """
         if self.model is None:
             logger.error("Model not loaded. Call load_model() first.")
             return []
@@ -104,7 +77,7 @@ class YOLOv8Detector:
                     detections.append(detection)
         
         except Exception as e:
-            logger.error(f"Error during object detection: {str(e)}")
+            logger.error("Error during object detection: %s", str(e))
             
         return detections
     
@@ -116,19 +89,6 @@ class YOLOv8Detector:
         thickness: int = 2,
         font_scale: float = 0.5
     ) -> np.ndarray:
-        """
-        Draw detection results on a frame.
-
-        Args:
-            frame: Input image frame
-            detections: List of detection results
-            color: Box color in BGR format
-            thickness: Line thickness
-            font_scale: Text font scale
-
-        Returns:
-            np.ndarray: Annotated frame
-        """
         annotated_frame = frame.copy()
         
         for detection in detections:
@@ -177,15 +137,6 @@ class YOLOv8Detector:
         return annotated_frame
     
     def get_detection_stats(self, detections: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        Calculate statistics from detection results.
-
-        Args:
-            detections: List of detection results
-
-        Returns:
-            dict: Detection statistics
-        """
         if not detections:
             return {
                 "count": 0,
@@ -216,24 +167,12 @@ class YOLOv8Detector:
             "timestamp": time.time()
         }
 
-def process_image_detection(img: Image.Image, 
-                   confidence_threshold: float = 0.5, 
-                   model_size: str = "n", 
-                   model_path: str = None) -> Tuple[List[Dict[str, Any]], Image.Image]:
-    """
-    A wrapper function that converts a PIL Image to an OpenCV image,
-    loads the YOLOv8 detector, performs detection and annotation,
-    then converts the annotated image back to a PIL Image.
-
-    Args:
-        img: Input image as a PIL Image.
-        confidence_threshold: Confidence threshold for detections.
-        model_size: Size specification for the default model.
-        model_path: Optional custom model path.
-
-    Returns:
-        A tuple: (list of detection results, annotated image as PIL Image)
-    """
+def process_image_detection(
+    img: Image.Image, 
+    confidence_threshold: float = 0.5, 
+    model_size: str = "n", 
+    model_path: Optional[str] = None
+) -> Tuple[List[Dict[str, Any]], Image.Image]:
     # Convert PIL (RGB) to OpenCV format (BGR)
     frame = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
     
