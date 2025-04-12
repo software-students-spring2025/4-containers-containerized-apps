@@ -15,12 +15,9 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/detect', methods=['POST'])
+
+@app.route("/detect", methods=["POST"])
 def detect():
-    """
-    API endpoint to perform object detection.
-    It expects a JSON payload containing a 'data_uri' field with the image data.
-    """
     try:
         data = request.get_json()
         if not data or "data_uri" not in data:
@@ -29,38 +26,36 @@ def detect():
 
         header, encoded = data["data_uri"].split(",", 1)
         image_data = io.BytesIO(base64.b64decode(encoded))
-        img = Image.open(image_data).convert('RGB')
-        
+        img = Image.open(image_data).convert("RGB")
+
         # Use the renamed function
         results, annotated_img = process_image_detection(img)
-        
+
         # Add object detection results to the response
         detection_results = []
         for det in results:
-            detection_results.append({
-                "class": det["class_name"],
-                "confidence": round(det["confidence"], 2),
-                "bbox": det["bbox"]
-            })
-        
+            detection_results.append(
+                {
+                    "class": det["class_name"],
+                    "confidence": round(det["confidence"], 2),
+                    "bbox": det["bbox"],
+                }
+            )
+
         # Save the annotated image to a bytes buffer
         img_bytes = io.BytesIO()
-        annotated_img.save(img_bytes, format='JPEG')
+        annotated_img.save(img_bytes, format="JPEG")
         img_bytes.seek(0)
-        
+
         # Return the annotated image
-        return send_file(img_bytes, mimetype='image/jpeg')
-    except Exception as e:
+        return send_file(img_bytes, mimetype="image/jpeg")
+    except Exception as e:  # pylint: disable=broad-except
         logger.exception("Error in /detect endpoint")
         return jsonify({"error": str(e)}), 500
 
-# Add an endpoint to get detection results as JSON
-@app.route('/detect_json', methods=['POST'])
+
+@app.route("/detect_json", methods=["POST"])
 def detect_json():
-    """
-    API endpoint to perform object detection and return JSON results.
-    It expects a JSON payload containing a 'data_uri' field with the image data.
-    """
     try:
         data = request.get_json()
         if not data or "data_uri" not in data:
@@ -69,28 +64,36 @@ def detect_json():
 
         header, encoded = data["data_uri"].split(",", 1)
         image_data = io.BytesIO(base64.b64decode(encoded))
-        img = Image.open(image_data).convert('RGB')
-        
+        img = Image.open(image_data).convert("RGB")
+
         # Use the renamed function
         results, _ = process_image_detection(img)
-        
+
         # Format the results for JSON response
         detection_results = []
         for det in results:
-            detection_results.append({
-                "class": det["class_name"],
-                "confidence": round(det["confidence"], 2),
-                "bbox": det["bbox"]
-            })
-        
-        return jsonify({
-            "status": "success",
-            "detections": detection_results,
-            "count": len(detection_results)
-        }), 200
+            detection_results.append(
+                {
+                    "class": det["class_name"],
+                    "confidence": round(det["confidence"], 2),
+                    "bbox": det["bbox"],
+                }
+            )
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "detections": detection_results,
+                    "count": len(detection_results),
+                }
+            ),
+            200,
+        )
     except Exception as e:
         logger.exception("Error in /detect_json endpoint")
         return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     # Run the Flask app on all available network interfaces on port 8000.

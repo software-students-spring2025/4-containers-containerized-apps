@@ -1,5 +1,4 @@
 ![Lint-free](https://github.com/nyu-software-engineering/containerized-app-exercise/actions/workflows/lint.yml/badge.svg)
-![Static Badge](https://img.shields.io/badge/build-Complete-green)
 ![ML Client Tests](https://github.com/software-students-spring2025/4-containers-containerized-apps/actions/workflows/ml-client-test.yml/badge.svg)
 ![Web App Tests](https://github.com/software-students-spring2025/4-containers-containerized-apps/actions/workflows/web-app-test.yml/badge.svg)
 
@@ -141,7 +140,31 @@ If you need to use your own MongoDB instance:
 4. After approval, merge into the main branch
 
 ### Testing
-Both the web app and ML client have test files that can be run using pytest:
+
+#### Using Docker (Recommended Method)
+
+Running tests with Docker ensures consistent testing environments across different systems.
+
+For the ML client:
+```bash
+docker build -t object-detection-service ./machine-learning-client
+docker run object-detection-service pytest
+```
+
+For code coverage testing:
+```bash
+docker run -it object-detection-service bash -c "pip install pytest-cov && pytest --cov=. --cov-report=term"
+```
+
+For the web app:
+```bash
+docker build -t web-app-service ./web-app
+docker run web-app-service pytest
+```
+
+#### Using Local Python Environment
+
+If you prefer to run tests locally:
 
 For the ML client:
 ```bash

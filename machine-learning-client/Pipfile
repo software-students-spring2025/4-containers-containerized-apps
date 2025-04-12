@@ -6,15 +6,22 @@ name = "pypi"
 [packages]
 pylint = "*"
 black = "*"
-numpy = "*"          # Numerical processing
-pymongo = "*"        # MongoDB client
-pytest = "*"         # Unit testing
-pytest-cov = "*"     # Test coverage
-python-dotenv = "*"  # Environment variable management
-ultralytics = "*"    # YOLOv8
-opencv-python = "*"  # Computer vision
+numpy = "*"
+pymongo = "*"
+pytest = "*"
+pytest-cov = "*"
+python-dotenv = "*"
+ultralytics = "*"
+opencv-python = "*"
+flask = "*"
+flask-cors = "*"
+pillow = "*"
+torch = "*"
+requests = "*"
+coverage = "*"
+werkzeug = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3"
+python_version = "3.10"

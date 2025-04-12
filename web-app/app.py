@@ -5,25 +5,27 @@ from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
 
-#***********************************
+# ***********************************
 # Michael Liu  04/08/25  SWE Proj4 *
-#***********************************
+# ***********************************
 
 app = Flask(__name__)
 
 # MongoDB Connection
 MONGO_URI = "mongodb+srv://lgl1876523678:1017@cluster0.k8xwe.mongodb.net/?retryWrites=true&w=majority"
-client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
+client = MongoClient(MONGO_URI, server_api=ServerApi("1"))
 
-db = client['project4_db']
-cpc = db['captured_photo']
-test_db = client['project4_db']
-test_collection = test_db['test_list']
+db = client["project4_db"]
+cpc = db["captured_photo"]
+test_db = client["project4_db"]
+test_collection = test_db["test_list"]
 object_name = "Unknown Object"
+
 
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 # GET: get name，POST: update name
 @app.route("/object_name", methods=["GET", "POST"])
@@ -39,7 +41,8 @@ def handle_object_name():
     else:
         return jsonify({"name": object_name}), 200
 
-# Uploading 
+
+# Uploading
 @app.route("/upload_photo", methods=["POST"])
 def upload_photo():
     data = request.get_json()
@@ -48,8 +51,8 @@ def upload_photo():
 
     data_uri = data["data_uri"]
     try:
-        # ******************************************* 
-        header, encoded = data_uri.split(',', 1)
+        # *******************************************
+        header, encoded = data_uri.split(",", 1)
         print("Received header:", header)
         print("Encoded length:", len(encoded))
 
@@ -61,12 +64,11 @@ def upload_photo():
             content_type = "image/jpeg"
         else:
             content_type = "application/octet-stream"
-        
+
         document = {
             "timestamp": datetime.datetime.utcnow(),
             "content_type": content_type,
-            "image_data": img_data
-            
+            "image_data": img_data,
         }
         result = cpc.insert_one(document)
         print("Inserted image document id:", result.inserted_id)
@@ -75,6 +77,7 @@ def upload_photo():
     except Exception as e:
         print("Error uploading photo:", e)
         return jsonify({"status": "error", "message": str(e)}), 500
+
 
 # Test
 @app.route("/test/<photo_id>")
@@ -90,6 +93,7 @@ def test(photo_id):
     except Exception as e:
         return str(e), 500
 
+
 if __name__ == "__main__":
-    
+
     app.run(host="0.0.0.0", port=5000, debug=True)
